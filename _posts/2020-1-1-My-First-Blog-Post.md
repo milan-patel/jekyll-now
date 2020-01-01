@@ -9,7 +9,6 @@ The idea of it scares me. I have a lot of ideas I don't act on because I worry t
 
 Happy new year. Next post comes tomorrow.
 
-![_config.yml]({{ site.baseurl }}/images/rowi-kiwi.jpg)
 
 
 
