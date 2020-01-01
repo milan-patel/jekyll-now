@@ -1,6 +1,6 @@
 ---
 layout: post
-title: My first blog post!
+title: My First Blog Post!
 ---
 
 2020 is the year I blog more. It's also the year I start blogging. The goal is to post data analysis daily. That's 365 posts. Once a day. For a year.
