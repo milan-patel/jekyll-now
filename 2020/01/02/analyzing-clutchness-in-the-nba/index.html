@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.62.1" />
+
+
+<title>Analyzing Clutchness in the NBA - A Hugo website</title>
+<meta property="og:title" content="Analyzing Clutchness in the NBA - A Hugo website">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/rstudio/blogdown">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/rstudio">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">7 min read</span>
+    
+
+    <h1 class="article-title">Analyzing Clutchness in the NBA</h1>
+
+    
+    <span class="article-date">2020-01-02</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p><em>The following is an adapted version of a final project submitted for my classification course</em></p>
+<p>Typically, an NBA team will attempt shots that maximizes their expected points per shot. For example, consider how a three-point shot with a 0.35 probability of scoring has a higher expected points per shot (<span class="math inline">\(E(S_{3ptr})= 3 \cdot 35\% = 1.05\)</span>) than a two-point shot with a 0.45 probability of scoring (<span class="math inline">\(E(S_{2ptr})= 2 \cdot 45\% = 0.9\)</span>). Thus, this three-point shot is strictly preferred to the two-point shot.</p>
+<p>However, each individual three-pointer has a higher variability in points per shot. Over a game or many games, variability in expected points tends not to matter. In limited samples, this difference in variability matters a great deal.</p>
+<p><span class="math display">\[Var(S_{3ptr}) = 2.05\]</span> <span class="math display">\[Var(S_{2ptr}) = 0.99\]</span></p>
+<p>In the case where there is much time remaining, a team should be “risk-neutral”, strictly preferring the shot that maximizes their expected points per shot. In the case where time is running out, teams in tightly-contested games have incentive to play “safer”. With fewer potential shots remaining, teams now may prefer minimizing the variability in points per shot. The preferred outcome* for a team in this situation is to take the shot with the highest probability of scoring.</p>
+<div id="data" class="section level1">
+<h1>Data</h1>
+<p>The dataset analyzed within <a href="https://hwchase17.github.io/sportvu/">this project</a> comes from four Harvard undergraduate students, Raymond Cen, Harrison Chase, Carlos Pena-Lobel, and Daniel Silberwasser for their final project for their data science course in 2016. The total dataset combines two larger datasets. The first is play-by-play data from the 2014-2015 NBA season. The play-by-play dataset contains information on every play, including inbounds, steals, jump balls and more. The second is the player-tracking data. The player-tracking data contains the <span class="math inline">\((x,y)\)</span> coordinate positions of all players during all games at a resolution of 25 measurements per second. It also contains the <span class="math inline">\((x,y,z)\)</span> coordinate positions of the basketball, also measuring the ball’s height from the ground. The students from Harvard derived from the originally <code>64GB</code> dataset a <code>50MB</code> dataset that only contained information on shooting. From this dataset, I will be analyzing only shots taken in the final 6 minutes of “close” games. “Close” is defined by a game where the winning team beats the losing team by fewer than 10 points.</p>
+<div id="preprocessing" class="section level2">
+<h2>Preprocessing</h2>
+<p>Many columns within this dataset contain redundant, unnecessary or highly-correlated features. First, we remove these features. We also add a <code>TIME_REMAINING</code> feature, combining the <code>MINUTES_REMAINING</code> and <code>SECONDS_REMAINING</code> field.</p>
+<div id="training-validation-and-test-sets" class="section level3">
+<h3>Training, Validation and Test Sets</h3>
+<p>In the original project, I split the data into a roughly 60/20/20 split for the training, validation and test sets. The training sets were used to train each of the algorithms I tested (logistic, naive bayes, gradient boosting, single-layer neural network and more) and tune their respective hyperparameters. The validation set was used to compare each of the models to one another. The best performing model was trained on the training and validation set and I’ve reported the findings from it here.</p>
+</div>
+</div>
+<div id="variables" class="section level2">
+<h2>Variables</h2>
+<pre class="r"><code>colnames(shot_data.clutch)</code></pre>
+<pre><code>##  [1] &quot;CLOSEST_DEFENDER&quot; &quot;CLOSE_DEF_DIST&quot;   &quot;DRIBBLES&quot;        
+##  [4] &quot;FINAL_MARGIN&quot;     &quot;LOCATION&quot;         &quot;PTS_TYPE&quot;        
+##  [7] &quot;SHOT_CLOCK&quot;       &quot;SHOT_DIST&quot;        &quot;SHOT_NUMBER&quot;     
+## [10] &quot;SHOT_RESULT&quot;      &quot;TOUCH_TIME&quot;       &quot;W&quot;               
+## [13] &quot;PLAYER_NAME&quot;      &quot;ACTION_TYPE&quot;      &quot;SHOT_ZONE_AREA&quot;  
+## [16] &quot;LOC_X&quot;            &quot;LOC_Y&quot;            &quot;TIME_REMAINING&quot;</code></pre>
+<ul>
+<li><p><code>CLOSEST_DEFENDER</code> is the name of the closest defender when the shot occurs, a categorical variate.</p></li>
+<li><p><code>CLOSE_DEF_DIST</code> is the distance in feet of the closest defender from the shooter, a continuous variate.</p></li>
+<li><p><code>DRIBBLES</code> is the number of dribbles the shooter takes after catching the ball and before shooting it, a discrete variate.</p></li>
+<li><p><code>FINAL_MARGIN</code> is the shooter’s team’s final score minus the opposing team’s final score, a discrete variate.</p></li>
+<li><p><code>LOCATION</code> is a binary variable, <code>H</code> if the shooter is on the home team, <code>A</code> if the shooter is on the away team.</p></li>
+<li><p><code>PTS_TYPE</code> is a binary variable, <code>3</code> if the shot is a three-pointer, <code>2</code> if the shot is a two-pointer.</p></li>
+<li><p><code>SHOT_CLOCK</code> is the time in seconds remaining on the shot clock. Each team has 24 seconds to shoot the ball. This is a continuous variable.</p></li>
+<li><p><code>SHOT_NUMBER</code> is the number of shots, including this shot, the shooter has taken so far, a discrete variable.</p></li>
+<li><p><code>TOUCH_TIME</code> is the time in seconds the shooter held the ball or dribbled the ball before shooting, a continuous variable.</p></li>
+<li><p><code>W</code> is a binary variable, <code>W</code> if the shooter is on the winning team, <code>L</code> if the shooter is on the losing team.</p></li>
+<li><p><code>PLAYER_NAME</code> is the name of the shooter, a categorical variable.</p></li>
+<li><p><code>ACTION_TYPE</code> is the type of shot taken (i.e. Driving Layup, Jump Shot, Fadeaway Jump Shot, etc.), a categorical variate.</p></li>
+<li><p><code>SHOT_ZONE_AREA</code> is the side of the court where the shot was taken (i.e. Left Side, Right Side, Center, etc.), a categorical variate.</p></li>
+<li><p><code>SHOT_DIST</code> is the distance of the shooter from the net, a continuous variable.</p></li>
+<li><p><code>LOC_X</code> and <code>LOC_Y</code> are the <span class="math inline">\((x,y)\)</span> coordinates of the shot, both are continuous variables.</p></li>
+<li><p><code>TIME_REMAINING</code> is the total time in seconds remaining in the game, a discrete variable.</p></li>
+<li><p><code>SHOT_RESULT</code> is a binary variable, “made” for a made shot, “missed” for a missed shot.</p></li>
+</ul>
+</div>
+<div id="excluded-models" class="section level2">
+<h2>Excluded Models</h2>
+<p>To provide context for the final model used, here are the error rates of some other models I used.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">models</th>
+<th align="right">errors</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Random Forest</td>
+<td align="right">0.275</td>
+</tr>
+<tr class="even">
+<td align="left">Gradient Boosting</td>
+<td align="right">0.309</td>
+</tr>
+<tr class="odd">
+<td align="left">SVM</td>
+<td align="right">0.375</td>
+</tr>
+<tr class="even">
+<td align="left">Neural Net</td>
+<td align="right">0.326</td>
+</tr>
+<tr class="odd">
+<td align="left">Random Guess</td>
+<td align="right">0.482</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="random-forests" class="section level2">
+<h2>Random Forests</h2>
+<p>Using an ensemble of weak-learning decision-trees, we can build random forests to predict shot probability. Random forests work well with categorical variates and, considering there are over 400 unique players players within this dataset, you would expect such an algorithm to perform well on this dataset.</p>
+<pre><code>## [1] &quot;The final test error is: 0.284&quot;</code></pre>
+<p>Overall, this is high performing model when considering the randomness of individual NBA shots.</p>
+</div>
+</div>
+<div id="conclusions" class="section level1">
+<h1>Conclusions</h1>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-8"></span>
+<img src="/post/2020-01-02-Clutchness_files/figure-html/unnamed-chunk-8-1.png" alt="Feature Importance for Final Random Forest" width="480" />
+<p class="caption">
+Figure 1: Feature Importance for Final Random Forest
+</p>
+</div>
+<p>In conclusion, the best model used <code>SHOT_DIST</code> and <code>LOC_Y</code> as the most important variates in the model. This is consistent with domain knowledge as shots further from the rim are also more difficult. The relationship between closest defender distance and shot probability is notable. The models consistently report that having the closest defender very close decreases the shot probability. More important is how to categorize players by defensive and offensive impact.</p>
+<p>The most interesting player in the model is Arron Afflalo. He is the most impactful player in this model on both offense and defense. He is the only player appearing in both the top ten most impactful defenders and shooters. However, while a positive offensive player, Afflalo is also highly predictive of increasing opponent shot probability according to this model.</p>
+<p>Notable players that stand out in the models, either in taking shots or affecting them, are Lamarcus Aldridge and Eric Bledsoe. Lamarcus Aldridge also appears as the most impactful shooter in this model. Bledsoe is the most impactful defender. The appearances of other widely-regarded star players such as Demar Derozan, Chris Paul, Mike Conley, Anthony Davis and Joe Johnson affirm that our model is likely correct in assessing offensive player impact.</p>
+<p>Other less notable players appear in this model such as Elfrid Payton and Wesley Johnson. Both players were impactful defenders in the bad way. Payton and Johnson were negative defenders in the clutch, increasing opponent shooting percentages and likely contributing to losses through their defense.</p>
+<p>As expected, layups and jump shots are the most efficient shots in basketball and they appear at the most important action types within this model.</p>
+<p>It should be noted that this dataset only considers the final 6 minutes of close basketball games. As a result, this subset of data is biased toward shots taken by teams playing lots of “close” games. For particularly strong and weak teams, games are usually decided before the final six minutes. The final few minutes of games with a final margin greater than 20 is referred to as “garbage time”. For shooters that play relatively few “close” games, they would appear in this dataset infrequently.</p>
+</div>
+<div id="future-work" class="section level1">
+<h1>Future Work</h1>
+<p>Initally, this project was meant to analyze data from the Women’s National Basketball Association (WNBA). However, the player-tracking data for the WNBA is either not collected or not publicly available. The NBA briefly made the data analyzed within this report available to the public in 2016, but it has since ceased providing it. Finding this dataset required relying on people like Harrison Chase to host these datasets through github. Performing these types of analysis on WNBA data will help push forward women’s basketball and help engage fans. It is unfortunate that WNBA data is not as readily available for fans as it is for the NBA.</p>
+<ul>
+<li>This will be elaborated upon in a future blog post</li>
+</ul>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

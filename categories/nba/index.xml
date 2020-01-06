@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>NBA on A Hugo website</title>
+    <link>/categories/nba/</link>
+    <description>Recent content in NBA on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 02 Jan 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/nba/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Analyzing Clutchness in the NBA</title>
+      <link>/2020/01/02/analyzing-clutchness-in-the-nba/</link>
+      <pubDate>Thu, 02 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/01/02/analyzing-clutchness-in-the-nba/</guid>
+      <description>The following is an adapted version of a final project submitted for my classification course
+Typically, an NBA team will attempt shots that maximizes their expected points per shot. For example, consider how a three-point shot with a 0.35 probability of scoring has a higher expected points per shot (\(E(S_{3ptr})= 3 \cdot 35\% = 1.05\)) than a two-point shot with a 0.45 probability of scoring (\(E(S_{2ptr})= 2 \cdot 45\% = 0.</description>
+    </item>
+    
+  </channel>
+</rss>

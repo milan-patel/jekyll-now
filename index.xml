@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>A Hugo website</title>
+    <link>/</link>
+    <description>Recent content on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 01 Jan 2020 21:48:51 -0700</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Wed, 01 Jan 2020 21:48:51 -0700</pubDate>
+      
+      <guid>/about/</guid>
+      <description>I&#39;m a fourth-year undergraduate student at the University of Waterloo. I&#39;m majoring in Statistics, having taken courses in classification, advanced regression, general linear models, experimental design and more.
+Contact me milan.patel@uwaterloo.ca</description>
+    </item>
+    
+    <item>
+      <title>Analyzing Clutchness in the NBA</title>
+      <link>/2020/01/02/analyzing-clutchness-in-the-nba/</link>
+      <pubDate>Thu, 02 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/01/02/analyzing-clutchness-in-the-nba/</guid>
+      <description>The following is an adapted version of a final project submitted for my classification course
+Typically, an NBA team will attempt shots that maximizes their expected points per shot. For example, consider how a three-point shot with a 0.35 probability of scoring has a higher expected points per shot (\(E(S_{3ptr})= 3 \cdot 35\% = 1.05\)) than a two-point shot with a 0.45 probability of scoring (\(E(S_{2ptr})= 2 \cdot 45\% = 0.</description>
+    </item>
+    
+    <item>
+      <title>My First Blog Post!</title>
+      <link>/2020/01/01/my-first-blog-post/</link>
+      <pubDate>Wed, 01 Jan 2020 13:09:13 -0600</pubDate>
+      
+      <guid>/2020/01/01/my-first-blog-post/</guid>
+      <description>2020 is the year I blog more. It&#39;s also the year I start blogging. The goal is to post data analysis daily. That&#39;s 365 posts. Once a day. For a year.
+The idea of it scares me. I have a lot of ideas I don&#39;t act on because I worry they aren&#39;t polished enough. There&#39;s a lot of things I don&#39;t do because I worry I won&#39;t do them well. But the only way to get better is to try.</description>
+    </item>
+    
+    <item>
+      <title>My First Blog Post!</title>
+      <link>/2020/01/01/my-first-blog-post/</link>
+      <pubDate>Wed, 01 Jan 2020 13:09:13 -0600</pubDate>
+      
+      <guid>/2020/01/01/my-first-blog-post/</guid>
+      <description>2020 is the year I blog more. It&#39;s also the year I start blogging. The goal is to post data analysis daily. That&#39;s 365 posts. Once a day. For a year.
+The idea of it scares me. I have a lot of ideas I don&#39;t act on because I worry they aren&#39;t polished enough. There&#39;s a lot of things I don&#39;t do because I worry I won&#39;t do them well. But the only way to get better is to try.</description>
+    </item>
+    
+  </channel>
+</rss>
