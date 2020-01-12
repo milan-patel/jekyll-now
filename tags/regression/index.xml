@@ -6,10 +6,21 @@
     <description>Recent content in regression on Milan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 02 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 03 Jan 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/regression/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>ELO Ratings in the NBA</title>
+      <link>/2020/01/03/elo-ratings-in-the-nba/</link>
+      <pubDate>Fri, 03 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/01/03/elo-ratings-in-the-nba/</guid>
+      <description>In this post, I’ve implemented an ELO system for all 30 teams in the NBA, similar to the one available at FiveThirtyEight.com.
+First, the ELO rating system is a simple way of ranking a pool of players that face each other in a series of head-to-head matches. After each match, the winner’s rating increases and the loser’s rating decreases, both by the same amount.
+\[ R_{new} = R_{prev}+k(S-p) \] The update formula follows this basic structure, where \(k\) is the update factor and \(S\) is the result of the match (1 if won, 0 if lost, 0.</description>
+    </item>
     
     <item>
       <title>Analyzing Clutchness in the NBA</title>

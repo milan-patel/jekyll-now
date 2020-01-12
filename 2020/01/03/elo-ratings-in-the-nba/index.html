@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.62.1" />
+
+
+<title>ELO Ratings in the NBA - Milan&#39;s Blog</title>
+<meta property="og:title" content="ELO Ratings in the NBA - Milan&#39;s Blog">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/milan-patel">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/mialnpatle">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">3 min read</span>
+    
+
+    <h1 class="article-title">ELO Ratings in the NBA</h1>
+
+    
+    <span class="article-date">2020-01-03</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p>In this post, I’ve implemented an ELO system for all 30 teams in the NBA, similar to the one available at <a href="www.fivethirtyeight.com">FiveThirtyEight.com</a>.</p>
+<p>First, the ELO rating system is a simple way of ranking a pool of players that face each other in a series of head-to-head matches. After each match, the winner’s rating increases and the loser’s rating decreases, both by the same amount.</p>
+<p><span class="math display">\[
+R_{new} = R_{prev}+k(S-p)
+\]</span> The update formula follows this basic structure, where <span class="math inline">\(k\)</span> is the update factor and <span class="math inline">\(S\)</span> is the result of the match (1 if won, 0 if lost, 0.5 if drawn) and <span class="math inline">\(p\)</span> is the probability of winning that match. The probability of winning the match is derived from the ratings of the two players before the match.</p>
+<p>The probability itself is from the logistic distribution with mean 0 and some scale factor, <span class="math inline">\(s\)</span>. Now taking these two facts, we can produce</p>
+<p>$$ p = </p>
+<p>$$</p>
+<pre class="r"><code># newRatings
+## returns vector of length 2, with updated rating of player 1 and updated rating of player 2
+newRatings &lt;- function(R1, R2, result, k=NULL, scale=NULL){
+  # R1: The rating of player 1.
+  # R2: The rating of player 2.
+  # result: The result of the match; 1 if Player 1 won, 0 otherwise. 
+  if(missing(k)) k=40
+  if(missing(scale)) scale=400
+  
+  p1 = plogis(R1-R2, scale=scale) # compute the probability of player 1 winning 
+  p2 = 1 - p1 # compute the probability of player 2 winning
+  
+  R1_new = R1 + k * (result-p1) # update player 1&#39;s rating 
+  R2_new = R2 + k * ((1-result)-p2) # update player 2&#39;s rating
+    
+  c(round(R1_new), round(R2_new)) # return both updated ratings, rounded to nearest whole number
+}</code></pre>
+<pre><code>##              Date        Visitor.Neutral         Home.Neutral S Margin
+## 1 Tue Oct 22 2019   New Orleans Pelicans      Toronto Raptors 0      8
+## 2 Tue Oct 22 2019     Los Angeles Lakers Los Angeles Clippers 0     10
+## 3 Wed Oct 23 2019          Chicago Bulls    Charlotte Hornets 0      1
+## 4 Wed Oct 23 2019        Detroit Pistons       Indiana Pacers 1      9
+## 5 Wed Oct 23 2019    Cleveland Cavaliers        Orlando Magic 0      9
+## 6 Wed Oct 23 2019 Minnesota Timberwolves        Brooklyn Nets 1      1</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Atlanta Hawks</td>
+<td align="right">1218</td>
+</tr>
+<tr class="even">
+<td>Golden State Warriors</td>
+<td align="right">1255</td>
+</tr>
+<tr class="odd">
+<td>Washington Wizards</td>
+<td align="right">1318</td>
+</tr>
+<tr class="even">
+<td>Cleveland Cavaliers</td>
+<td align="right">1319</td>
+</tr>
+<tr class="odd">
+<td>New York Knicks</td>
+<td align="right">1337</td>
+</tr>
+<tr class="even">
+<td>Detroit Pistons</td>
+<td align="right">1342</td>
+</tr>
+<tr class="odd">
+<td>Minnesota Timberwolves</td>
+<td align="right">1357</td>
+</tr>
+<tr class="even">
+<td>Charlotte Hornets</td>
+<td align="right">1359</td>
+</tr>
+<tr class="odd">
+<td>Sacramento Kings</td>
+<td align="right">1364</td>
+</tr>
+<tr class="even">
+<td>Phoenix Suns</td>
+<td align="right">1367</td>
+</tr>
+<tr class="odd">
+<td>Chicago Bulls</td>
+<td align="right">1374</td>
+</tr>
+<tr class="even">
+<td>New Orleans Pelicans</td>
+<td align="right">1375</td>
+</tr>
+<tr class="odd">
+<td>Portland Trail Blazers</td>
+<td align="right">1384</td>
+</tr>
+<tr class="even">
+<td>Memphis Grizzlies</td>
+<td align="right">1392</td>
+</tr>
+<tr class="odd">
+<td>San Antonio Spurs</td>
+<td align="right">1437</td>
+</tr>
+<tr class="even">
+<td>Orlando Magic</td>
+<td align="right">1451</td>
+</tr>
+<tr class="odd">
+<td>Brooklyn Nets</td>
+<td align="right">1465</td>
+</tr>
+<tr class="even">
+<td>Oklahoma City Thunder</td>
+<td align="right">1598</td>
+</tr>
+<tr class="odd">
+<td>Philadelphia 76ers</td>
+<td align="right">1625</td>
+</tr>
+<tr class="even">
+<td>Indiana Pacers</td>
+<td align="right">1633</td>
+</tr>
+<tr class="odd">
+<td>Dallas Mavericks</td>
+<td align="right">1642</td>
+</tr>
+<tr class="even">
+<td>Toronto Raptors</td>
+<td align="right">1645</td>
+</tr>
+<tr class="odd">
+<td>Utah Jazz</td>
+<td align="right">1647</td>
+</tr>
+<tr class="even">
+<td>Houston Rockets</td>
+<td align="right">1654</td>
+</tr>
+<tr class="odd">
+<td>Denver Nuggets</td>
+<td align="right">1691</td>
+</tr>
+<tr class="even">
+<td>Los Angeles Clippers</td>
+<td align="right">1691</td>
+</tr>
+<tr class="odd">
+<td>Boston Celtics</td>
+<td align="right">1712</td>
+</tr>
+<tr class="even">
+<td>Miami Heat</td>
+<td align="right">1732</td>
+</tr>
+<tr class="odd">
+<td>Los Angeles Lakers</td>
+<td align="right">1769</td>
+</tr>
+<tr class="even">
+<td>Milwaukee Bucks</td>
+<td align="right">1847</td>
+</tr>
+</tbody>
+</table>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+
