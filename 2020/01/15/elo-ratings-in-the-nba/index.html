@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.62.1" />
+
+
+<title>ELO Ratings in the NBA - Milan&#39;s Blog</title>
+<meta property="og:title" content="ELO Ratings in the NBA - Milan&#39;s Blog">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/milan-patel">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/mialnpatle">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">6 min read</span>
+    
+
+    <h1 class="article-title">ELO Ratings in the NBA</h1>
+
+    
+    <span class="article-date">2020-01-15</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p>In this post, I’ve implemented an ELO system for all 30 teams in the NBA, similar to the one available at <a href="https://projects.fivethirtyeight.com/2020-nba-predictions/">FiveThirtyEight.com</a>.</p>
+<p>First, the ELO rating system is a simple way of ranking a pool of players that face each other in a series of head-to-head matches. After each match, the winner’s rating increases and the loser’s rating decreases, both by the same amount.</p>
+<p>The update formula follows this basic structure, <span class="math inline">\(R_{new} = R_{prev}+k(S-p)\)</span> , where <span class="math inline">\(k\)</span> is the update factor and <span class="math inline">\(S\)</span> is the result of the match (1 if won, 0 if lost, 0.5 if drawn) and <span class="math inline">\(p\)</span> is the probability of winning that match. The probability of winning the match is derived from the ratings of the two players before the match. The probability itself is from the logistic distribution with mean 0 and some scale factor, <span class="math inline">\(s\)</span>.</p>
+<p>To simplify, if a team wins, their rating goes up by <span class="math inline">\(k \cdot P(Team loses)\)</span> and if they lose, their rating goes down by <span class="math inline">\(k \cdot P(Team wins)\)</span>. This way, teams with a high probability of winning don’t gain much by winning and teams with a low probability of winning don’t lose much by losing.</p>
+<div id="simulation" class="section level1">
+<h1>Simulation</h1>
+<p>Applying this to NBA teams through January 2nd yields the following results. Using NBA standings at the time, we have a benchmark for how well the ELO ratings fit the <em>true</em> rankings of teams in the NBA. Looking below at the chart, we see most teams performing close to their ELO ratings. However, there are a few teams that are underperforming and a few teams that are overperforming.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Team</th>
+<th align="right">ELO</th>
+<th align="right">W/L%</th>
+<th align="right">ELO.Rank</th>
+<th align="right">Rank</th>
+<th align="right">Diff.in.Rank</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">New Orleans Pelicans</td>
+<td align="right">1500</td>
+<td align="right">0.324</td>
+<td align="right">15.5</td>
+<td align="right">11.5</td>
+<td align="right">4.0</td>
+</tr>
+<tr class="even">
+<td align="left">New Orleans Pelicans</td>
+<td align="right">1500</td>
+<td align="right">0.324</td>
+<td align="right">31.0</td>
+<td align="right">11.5</td>
+<td align="right">19.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Los Angeles Lakers</td>
+<td align="right">1500</td>
+<td align="right">0.794</td>
+<td align="right">15.5</td>
+<td align="right">57.5</td>
+<td align="right">-42.0</td>
+</tr>
+<tr class="even">
+<td align="left">Los Angeles Lakers</td>
+<td align="right">1500</td>
+<td align="right">0.794</td>
+<td align="right">32.0</td>
+<td align="right">57.5</td>
+<td align="right">-25.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Chicago Bulls</td>
+<td align="right">1500</td>
+<td align="right">0.371</td>
+<td align="right">15.5</td>
+<td align="right">17.5</td>
+<td align="right">-2.0</td>
+</tr>
+<tr class="even">
+<td align="left">Chicago Bulls</td>
+<td align="right">1500</td>
+<td align="right">0.371</td>
+<td align="right">33.0</td>
+<td align="right">17.5</td>
+<td align="right">15.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Detroit Pistons</td>
+<td align="right">1500</td>
+<td align="right">0.343</td>
+<td align="right">15.5</td>
+<td align="right">13.5</td>
+<td align="right">2.0</td>
+</tr>
+<tr class="even">
+<td align="left">Detroit Pistons</td>
+<td align="right">1500</td>
+<td align="right">0.343</td>
+<td align="right">34.0</td>
+<td align="right">13.5</td>
+<td align="right">20.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Cleveland Cavaliers</td>
+<td align="right">1500</td>
+<td align="right">0.294</td>
+<td align="right">15.5</td>
+<td align="right">6.5</td>
+<td align="right">9.0</td>
+</tr>
+<tr class="even">
+<td align="left">Cleveland Cavaliers</td>
+<td align="right">1500</td>
+<td align="right">0.294</td>
+<td align="right">35.0</td>
+<td align="right">6.5</td>
+<td align="right">28.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Minnesota Timberwolves</td>
+<td align="right">1500</td>
+<td align="right">0.382</td>
+<td align="right">15.5</td>
+<td align="right">24.5</td>
+<td align="right">-9.0</td>
+</tr>
+<tr class="even">
+<td align="left">Minnesota Timberwolves</td>
+<td align="right">1500</td>
+<td align="right">0.382</td>
+<td align="right">36.0</td>
+<td align="right">24.5</td>
+<td align="right">11.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Memphis Grizzlies</td>
+<td align="right">1500</td>
+<td align="right">0.371</td>
+<td align="right">15.5</td>
+<td align="right">17.5</td>
+<td align="right">-2.0</td>
+</tr>
+<tr class="even">
+<td align="left">Memphis Grizzlies</td>
+<td align="right">1500</td>
+<td align="right">0.371</td>
+<td align="right">37.0</td>
+<td align="right">17.5</td>
+<td align="right">19.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Boston Celtics</td>
+<td align="right">1500</td>
+<td align="right">0.742</td>
+<td align="right">15.5</td>
+<td align="right">55.5</td>
+<td align="right">-40.0</td>
+</tr>
+<tr class="even">
+<td align="left">Boston Celtics</td>
+<td align="right">1500</td>
+<td align="right">0.742</td>
+<td align="right">38.0</td>
+<td align="right">55.5</td>
+<td align="right">-17.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Washington Wizards</td>
+<td align="right">1500</td>
+<td align="right">0.303</td>
+<td align="right">15.5</td>
+<td align="right">9.5</td>
+<td align="right">6.0</td>
+</tr>
+<tr class="even">
+<td align="left">Washington Wizards</td>
+<td align="right">1500</td>
+<td align="right">0.303</td>
+<td align="right">39.0</td>
+<td align="right">9.5</td>
+<td align="right">29.5</td>
+</tr>
+<tr class="odd">
+<td align="left">New York Knicks</td>
+<td align="right">1500</td>
+<td align="right">0.294</td>
+<td align="right">15.5</td>
+<td align="right">6.5</td>
+<td align="right">9.0</td>
+</tr>
+<tr class="even">
+<td align="left">New York Knicks</td>
+<td align="right">1500</td>
+<td align="right">0.294</td>
+<td align="right">40.0</td>
+<td align="right">6.5</td>
+<td align="right">33.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Oklahoma City Thunder</td>
+<td align="right">1500</td>
+<td align="right">0.559</td>
+<td align="right">15.5</td>
+<td align="right">35.5</td>
+<td align="right">-20.0</td>
+</tr>
+<tr class="even">
+<td align="left">Oklahoma City Thunder</td>
+<td align="right">1500</td>
+<td align="right">0.559</td>
+<td align="right">41.0</td>
+<td align="right">35.5</td>
+<td align="right">5.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Sacramento Kings</td>
+<td align="right">1500</td>
+<td align="right">0.371</td>
+<td align="right">15.5</td>
+<td align="right">17.5</td>
+<td align="right">-2.0</td>
+</tr>
+<tr class="even">
+<td align="left">Sacramento Kings</td>
+<td align="right">1500</td>
+<td align="right">0.371</td>
+<td align="right">42.0</td>
+<td align="right">17.5</td>
+<td align="right">24.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Denver Nuggets</td>
+<td align="right">1500</td>
+<td align="right">0.706</td>
+<td align="right">15.5</td>
+<td align="right">51.5</td>
+<td align="right">-36.0</td>
+</tr>
+<tr class="even">
+<td align="left">Denver Nuggets</td>
+<td align="right">1500</td>
+<td align="right">0.706</td>
+<td align="right">43.0</td>
+<td align="right">51.5</td>
+<td align="right">-8.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Atlanta Hawks</td>
+<td align="right">1500</td>
+<td align="right">0.206</td>
+<td align="right">15.5</td>
+<td align="right">1.5</td>
+<td align="right">14.0</td>
+</tr>
+<tr class="even">
+<td align="left">Atlanta Hawks</td>
+<td align="right">1500</td>
+<td align="right">0.206</td>
+<td align="right">44.0</td>
+<td align="right">1.5</td>
+<td align="right">42.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Milwaukee Bucks</td>
+<td align="right">1500</td>
+<td align="right">0.861</td>
+<td align="right">15.5</td>
+<td align="right">59.5</td>
+<td align="right">-44.0</td>
+</tr>
+<tr class="even">
+<td align="left">Milwaukee Bucks</td>
+<td align="right">1500</td>
+<td align="right">0.861</td>
+<td align="right">45.0</td>
+<td align="right">59.5</td>
+<td align="right">-14.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Los Angeles Clippers</td>
+<td align="right">1500</td>
+<td align="right">0.694</td>
+<td align="right">15.5</td>
+<td align="right">49.5</td>
+<td align="right">-34.0</td>
+</tr>
+<tr class="even">
+<td align="left">Los Angeles Clippers</td>
+<td align="right">1500</td>
+<td align="right">0.694</td>
+<td align="right">46.0</td>
+<td align="right">49.5</td>
+<td align="right">-3.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Toronto Raptors</td>
+<td align="right">1500</td>
+<td align="right">0.657</td>
+<td align="right">15.5</td>
+<td align="right">45.5</td>
+<td align="right">-30.0</td>
+</tr>
+<tr class="even">
+<td align="left">Toronto Raptors</td>
+<td align="right">1500</td>
+<td align="right">0.657</td>
+<td align="right">47.0</td>
+<td align="right">45.5</td>
+<td align="right">1.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Dallas Mavericks</td>
+<td align="right">1500</td>
+<td align="right">0.647</td>
+<td align="right">15.5</td>
+<td align="right">42.5</td>
+<td align="right">-27.0</td>
+</tr>
+<tr class="even">
+<td align="left">Dallas Mavericks</td>
+<td align="right">1500</td>
+<td align="right">0.647</td>
+<td align="right">48.0</td>
+<td align="right">42.5</td>
+<td align="right">5.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Phoenix Suns</td>
+<td align="right">1500</td>
+<td align="right">0.382</td>
+<td align="right">15.5</td>
+<td align="right">24.5</td>
+<td align="right">-9.0</td>
+</tr>
+<tr class="even">
+<td align="left">Phoenix Suns</td>
+<td align="right">1500</td>
+<td align="right">0.382</td>
+<td align="right">49.0</td>
+<td align="right">24.5</td>
+<td align="right">24.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Portland Trail Blazers</td>
+<td align="right">1500</td>
+<td align="right">0.400</td>
+<td align="right">15.5</td>
+<td align="right">27.5</td>
+<td align="right">-12.0</td>
+</tr>
+<tr class="even">
+<td align="left">Portland Trail Blazers</td>
+<td align="right">1500</td>
+<td align="right">0.400</td>
+<td align="right">50.0</td>
+<td align="right">27.5</td>
+<td align="right">22.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Utah Jazz</td>
+<td align="right">1500</td>
+<td align="right">0.647</td>
+<td align="right">15.5</td>
+<td align="right">42.5</td>
+<td align="right">-27.0</td>
+</tr>
+<tr class="even">
+<td align="left">Utah Jazz</td>
+<td align="right">1500</td>
+<td align="right">0.647</td>
+<td align="right">51.0</td>
+<td align="right">42.5</td>
+<td align="right">8.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Miami Heat</td>
+<td align="right">1500</td>
+<td align="right">0.735</td>
+<td align="right">15.5</td>
+<td align="right">53.5</td>
+<td align="right">-38.0</td>
+</tr>
+<tr class="even">
+<td align="left">Miami Heat</td>
+<td align="right">1500</td>
+<td align="right">0.735</td>
+<td align="right">52.0</td>
+<td align="right">53.5</td>
+<td align="right">-1.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Philadelphia 76ers</td>
+<td align="right">1500</td>
+<td align="right">0.639</td>
+<td align="right">15.5</td>
+<td align="right">39.5</td>
+<td align="right">-24.0</td>
+</tr>
+<tr class="even">
+<td align="left">Philadelphia 76ers</td>
+<td align="right">1500</td>
+<td align="right">0.639</td>
+<td align="right">53.0</td>
+<td align="right">39.5</td>
+<td align="right">13.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Orlando Magic</td>
+<td align="right">1500</td>
+<td align="right">0.441</td>
+<td align="right">15.5</td>
+<td align="right">31.5</td>
+<td align="right">-16.0</td>
+</tr>
+<tr class="even">
+<td align="left">Orlando Magic</td>
+<td align="right">1500</td>
+<td align="right">0.441</td>
+<td align="right">54.0</td>
+<td align="right">31.5</td>
+<td align="right">22.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Indiana Pacers</td>
+<td align="right">1500</td>
+<td align="right">0.629</td>
+<td align="right">15.5</td>
+<td align="right">37.5</td>
+<td align="right">-22.0</td>
+</tr>
+<tr class="even">
+<td align="left">Indiana Pacers</td>
+<td align="right">1500</td>
+<td align="right">0.629</td>
+<td align="right">55.0</td>
+<td align="right">37.5</td>
+<td align="right">17.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Golden State Warriors</td>
+<td align="right">1500</td>
+<td align="right">0.250</td>
+<td align="right">15.5</td>
+<td align="right">3.5</td>
+<td align="right">12.0</td>
+</tr>
+<tr class="even">
+<td align="left">Golden State Warriors</td>
+<td align="right">1500</td>
+<td align="right">0.250</td>
+<td align="right">56.0</td>
+<td align="right">3.5</td>
+<td align="right">52.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Brooklyn Nets</td>
+<td align="right">1500</td>
+<td align="right">0.485</td>
+<td align="right">15.5</td>
+<td align="right">33.5</td>
+<td align="right">-18.0</td>
+</tr>
+<tr class="even">
+<td align="left">Brooklyn Nets</td>
+<td align="right">1500</td>
+<td align="right">0.485</td>
+<td align="right">57.0</td>
+<td align="right">33.5</td>
+<td align="right">23.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Charlotte Hornets</td>
+<td align="right">1500</td>
+<td align="right">0.378</td>
+<td align="right">15.5</td>
+<td align="right">21.5</td>
+<td align="right">-6.0</td>
+</tr>
+<tr class="even">
+<td align="left">Charlotte Hornets</td>
+<td align="right">1500</td>
+<td align="right">0.378</td>
+<td align="right">58.0</td>
+<td align="right">21.5</td>
+<td align="right">36.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Houston Rockets</td>
+<td align="right">1500</td>
+<td align="right">0.676</td>
+<td align="right">15.5</td>
+<td align="right">47.5</td>
+<td align="right">-32.0</td>
+</tr>
+<tr class="even">
+<td align="left">Houston Rockets</td>
+<td align="right">1500</td>
+<td align="right">0.676</td>
+<td align="right">59.0</td>
+<td align="right">47.5</td>
+<td align="right">11.5</td>
+</tr>
+<tr class="odd">
+<td align="left">San Antonio Spurs</td>
+<td align="right">1500</td>
+<td align="right">0.424</td>
+<td align="right">15.5</td>
+<td align="right">29.5</td>
+<td align="right">-14.0</td>
+</tr>
+<tr class="even">
+<td align="left">San Antonio Spurs</td>
+<td align="right">1500</td>
+<td align="right">0.424</td>
+<td align="right">60.0</td>
+<td align="right">29.5</td>
+<td align="right">30.5</td>
+</tr>
+<tr class="odd">
+<td align="left">New Orleans Pelicans</td>
+<td align="right">NA</td>
+<td align="right">0.324</td>
+<td align="right">15.5</td>
+<td align="right">11.5</td>
+<td align="right">4.0</td>
+</tr>
+<tr class="even">
+<td align="left">New Orleans Pelicans</td>
+<td align="right">NA</td>
+<td align="right">0.324</td>
+<td align="right">31.0</td>
+<td align="right">11.5</td>
+<td align="right">19.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Los Angeles Lakers</td>
+<td align="right">NA</td>
+<td align="right">0.794</td>
+<td align="right">15.5</td>
+<td align="right">57.5</td>
+<td align="right">-42.0</td>
+</tr>
+<tr class="even">
+<td align="left">Los Angeles Lakers</td>
+<td align="right">NA</td>
+<td align="right">0.794</td>
+<td align="right">32.0</td>
+<td align="right">57.5</td>
+<td align="right">-25.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Chicago Bulls</td>
+<td align="right">NA</td>
+<td align="right">0.371</td>
+<td align="right">15.5</td>
+<td align="right">17.5</td>
+<td align="right">-2.0</td>
+</tr>
+<tr class="even">
+<td align="left">Chicago Bulls</td>
+<td align="right">NA</td>
+<td align="right">0.371</td>
+<td align="right">33.0</td>
+<td align="right">17.5</td>
+<td align="right">15.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Detroit Pistons</td>
+<td align="right">NA</td>
+<td align="right">0.343</td>
+<td align="right">15.5</td>
+<td align="right">13.5</td>
+<td align="right">2.0</td>
+</tr>
+<tr class="even">
+<td align="left">Detroit Pistons</td>
+<td align="right">NA</td>
+<td align="right">0.343</td>
+<td align="right">34.0</td>
+<td align="right">13.5</td>
+<td align="right">20.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Cleveland Cavaliers</td>
+<td align="right">NA</td>
+<td align="right">0.294</td>
+<td align="right">15.5</td>
+<td align="right">6.5</td>
+<td align="right">9.0</td>
+</tr>
+<tr class="even">
+<td align="left">Cleveland Cavaliers</td>
+<td align="right">NA</td>
+<td align="right">0.294</td>
+<td align="right">35.0</td>
+<td align="right">6.5</td>
+<td align="right">28.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Minnesota Timberwolves</td>
+<td align="right">NA</td>
+<td align="right">0.382</td>
+<td align="right">15.5</td>
+<td align="right">24.5</td>
+<td align="right">-9.0</td>
+</tr>
+<tr class="even">
+<td align="left">Minnesota Timberwolves</td>
+<td align="right">NA</td>
+<td align="right">0.382</td>
+<td align="right">36.0</td>
+<td align="right">24.5</td>
+<td align="right">11.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Memphis Grizzlies</td>
+<td align="right">NA</td>
+<td align="right">0.371</td>
+<td align="right">15.5</td>
+<td align="right">17.5</td>
+<td align="right">-2.0</td>
+</tr>
+<tr class="even">
+<td align="left">Memphis Grizzlies</td>
+<td align="right">NA</td>
+<td align="right">0.371</td>
+<td align="right">37.0</td>
+<td align="right">17.5</td>
+<td align="right">19.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Boston Celtics</td>
+<td align="right">NA</td>
+<td align="right">0.742</td>
+<td align="right">15.5</td>
+<td align="right">55.5</td>
+<td align="right">-40.0</td>
+</tr>
+<tr class="even">
+<td align="left">Boston Celtics</td>
+<td align="right">NA</td>
+<td align="right">0.742</td>
+<td align="right">38.0</td>
+<td align="right">55.5</td>
+<td align="right">-17.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Washington Wizards</td>
+<td align="right">NA</td>
+<td align="right">0.303</td>
+<td align="right">15.5</td>
+<td align="right">9.5</td>
+<td align="right">6.0</td>
+</tr>
+<tr class="even">
+<td align="left">Washington Wizards</td>
+<td align="right">NA</td>
+<td align="right">0.303</td>
+<td align="right">39.0</td>
+<td align="right">9.5</td>
+<td align="right">29.5</td>
+</tr>
+<tr class="odd">
+<td align="left">New York Knicks</td>
+<td align="right">NA</td>
+<td align="right">0.294</td>
+<td align="right">15.5</td>
+<td align="right">6.5</td>
+<td align="right">9.0</td>
+</tr>
+<tr class="even">
+<td align="left">New York Knicks</td>
+<td align="right">NA</td>
+<td align="right">0.294</td>
+<td align="right">40.0</td>
+<td align="right">6.5</td>
+<td align="right">33.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Oklahoma City Thunder</td>
+<td align="right">NA</td>
+<td align="right">0.559</td>
+<td align="right">15.5</td>
+<td align="right">35.5</td>
+<td align="right">-20.0</td>
+</tr>
+<tr class="even">
+<td align="left">Oklahoma City Thunder</td>
+<td align="right">NA</td>
+<td align="right">0.559</td>
+<td align="right">41.0</td>
+<td align="right">35.5</td>
+<td align="right">5.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Sacramento Kings</td>
+<td align="right">NA</td>
+<td align="right">0.371</td>
+<td align="right">15.5</td>
+<td align="right">17.5</td>
+<td align="right">-2.0</td>
+</tr>
+<tr class="even">
+<td align="left">Sacramento Kings</td>
+<td align="right">NA</td>
+<td align="right">0.371</td>
+<td align="right">42.0</td>
+<td align="right">17.5</td>
+<td align="right">24.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Denver Nuggets</td>
+<td align="right">NA</td>
+<td align="right">0.706</td>
+<td align="right">15.5</td>
+<td align="right">51.5</td>
+<td align="right">-36.0</td>
+</tr>
+<tr class="even">
+<td align="left">Denver Nuggets</td>
+<td align="right">NA</td>
+<td align="right">0.706</td>
+<td align="right">43.0</td>
+<td align="right">51.5</td>
+<td align="right">-8.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Atlanta Hawks</td>
+<td align="right">NA</td>
+<td align="right">0.206</td>
+<td align="right">15.5</td>
+<td align="right">1.5</td>
+<td align="right">14.0</td>
+</tr>
+<tr class="even">
+<td align="left">Atlanta Hawks</td>
+<td align="right">NA</td>
+<td align="right">0.206</td>
+<td align="right">44.0</td>
+<td align="right">1.5</td>
+<td align="right">42.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Milwaukee Bucks</td>
+<td align="right">NA</td>
+<td align="right">0.861</td>
+<td align="right">15.5</td>
+<td align="right">59.5</td>
+<td align="right">-44.0</td>
+</tr>
+<tr class="even">
+<td align="left">Milwaukee Bucks</td>
+<td align="right">NA</td>
+<td align="right">0.861</td>
+<td align="right">45.0</td>
+<td align="right">59.5</td>
+<td align="right">-14.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Los Angeles Clippers</td>
+<td align="right">NA</td>
+<td align="right">0.694</td>
+<td align="right">15.5</td>
+<td align="right">49.5</td>
+<td align="right">-34.0</td>
+</tr>
+<tr class="even">
+<td align="left">Los Angeles Clippers</td>
+<td align="right">NA</td>
+<td align="right">0.694</td>
+<td align="right">46.0</td>
+<td align="right">49.5</td>
+<td align="right">-3.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Toronto Raptors</td>
+<td align="right">NA</td>
+<td align="right">0.657</td>
+<td align="right">15.5</td>
+<td align="right">45.5</td>
+<td align="right">-30.0</td>
+</tr>
+<tr class="even">
+<td align="left">Toronto Raptors</td>
+<td align="right">NA</td>
+<td align="right">0.657</td>
+<td align="right">47.0</td>
+<td align="right">45.5</td>
+<td align="right">1.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Dallas Mavericks</td>
+<td align="right">NA</td>
+<td align="right">0.647</td>
+<td align="right">15.5</td>
+<td align="right">42.5</td>
+<td align="right">-27.0</td>
+</tr>
+<tr class="even">
+<td align="left">Dallas Mavericks</td>
+<td align="right">NA</td>
+<td align="right">0.647</td>
+<td align="right">48.0</td>
+<td align="right">42.5</td>
+<td align="right">5.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Phoenix Suns</td>
+<td align="right">NA</td>
+<td align="right">0.382</td>
+<td align="right">15.5</td>
+<td align="right">24.5</td>
+<td align="right">-9.0</td>
+</tr>
+<tr class="even">
+<td align="left">Phoenix Suns</td>
+<td align="right">NA</td>
+<td align="right">0.382</td>
+<td align="right">49.0</td>
+<td align="right">24.5</td>
+<td align="right">24.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Portland Trail Blazers</td>
+<td align="right">NA</td>
+<td align="right">0.400</td>
+<td align="right">15.5</td>
+<td align="right">27.5</td>
+<td align="right">-12.0</td>
+</tr>
+<tr class="even">
+<td align="left">Portland Trail Blazers</td>
+<td align="right">NA</td>
+<td align="right">0.400</td>
+<td align="right">50.0</td>
+<td align="right">27.5</td>
+<td align="right">22.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Utah Jazz</td>
+<td align="right">NA</td>
+<td align="right">0.647</td>
+<td align="right">15.5</td>
+<td align="right">42.5</td>
+<td align="right">-27.0</td>
+</tr>
+<tr class="even">
+<td align="left">Utah Jazz</td>
+<td align="right">NA</td>
+<td align="right">0.647</td>
+<td align="right">51.0</td>
+<td align="right">42.5</td>
+<td align="right">8.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Miami Heat</td>
+<td align="right">NA</td>
+<td align="right">0.735</td>
+<td align="right">15.5</td>
+<td align="right">53.5</td>
+<td align="right">-38.0</td>
+</tr>
+<tr class="even">
+<td align="left">Miami Heat</td>
+<td align="right">NA</td>
+<td align="right">0.735</td>
+<td align="right">52.0</td>
+<td align="right">53.5</td>
+<td align="right">-1.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Philadelphia 76ers</td>
+<td align="right">NA</td>
+<td align="right">0.639</td>
+<td align="right">15.5</td>
+<td align="right">39.5</td>
+<td align="right">-24.0</td>
+</tr>
+<tr class="even">
+<td align="left">Philadelphia 76ers</td>
+<td align="right">NA</td>
+<td align="right">0.639</td>
+<td align="right">53.0</td>
+<td align="right">39.5</td>
+<td align="right">13.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Orlando Magic</td>
+<td align="right">NA</td>
+<td align="right">0.441</td>
+<td align="right">15.5</td>
+<td align="right">31.5</td>
+<td align="right">-16.0</td>
+</tr>
+<tr class="even">
+<td align="left">Orlando Magic</td>
+<td align="right">NA</td>
+<td align="right">0.441</td>
+<td align="right">54.0</td>
+<td align="right">31.5</td>
+<td align="right">22.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Indiana Pacers</td>
+<td align="right">NA</td>
+<td align="right">0.629</td>
+<td align="right">15.5</td>
+<td align="right">37.5</td>
+<td align="right">-22.0</td>
+</tr>
+<tr class="even">
+<td align="left">Indiana Pacers</td>
+<td align="right">NA</td>
+<td align="right">0.629</td>
+<td align="right">55.0</td>
+<td align="right">37.5</td>
+<td align="right">17.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Golden State Warriors</td>
+<td align="right">NA</td>
+<td align="right">0.250</td>
+<td align="right">15.5</td>
+<td align="right">3.5</td>
+<td align="right">12.0</td>
+</tr>
+<tr class="even">
+<td align="left">Golden State Warriors</td>
+<td align="right">NA</td>
+<td align="right">0.250</td>
+<td align="right">56.0</td>
+<td align="right">3.5</td>
+<td align="right">52.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Brooklyn Nets</td>
+<td align="right">NA</td>
+<td align="right">0.485</td>
+<td align="right">15.5</td>
+<td align="right">33.5</td>
+<td align="right">-18.0</td>
+</tr>
+<tr class="even">
+<td align="left">Brooklyn Nets</td>
+<td align="right">NA</td>
+<td align="right">0.485</td>
+<td align="right">57.0</td>
+<td align="right">33.5</td>
+<td align="right">23.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Charlotte Hornets</td>
+<td align="right">NA</td>
+<td align="right">0.378</td>
+<td align="right">15.5</td>
+<td align="right">21.5</td>
+<td align="right">-6.0</td>
+</tr>
+<tr class="even">
+<td align="left">Charlotte Hornets</td>
+<td align="right">NA</td>
+<td align="right">0.378</td>
+<td align="right">58.0</td>
+<td align="right">21.5</td>
+<td align="right">36.5</td>
+</tr>
+<tr class="odd">
+<td align="left">Houston Rockets</td>
+<td align="right">NA</td>
+<td align="right">0.676</td>
+<td align="right">15.5</td>
+<td align="right">47.5</td>
+<td align="right">-32.0</td>
+</tr>
+<tr class="even">
+<td align="left">Houston Rockets</td>
+<td align="right">NA</td>
+<td align="right">0.676</td>
+<td align="right">59.0</td>
+<td align="right">47.5</td>
+<td align="right">11.5</td>
+</tr>
+<tr class="odd">
+<td align="left">San Antonio Spurs</td>
+<td align="right">NA</td>
+<td align="right">0.424</td>
+<td align="right">15.5</td>
+<td align="right">29.5</td>
+<td align="right">-14.0</td>
+</tr>
+<tr class="even">
+<td align="left">San Antonio Spurs</td>
+<td align="right">NA</td>
+<td align="right">0.424</td>
+<td align="right">60.0</td>
+<td align="right">29.5</td>
+<td align="right">30.5</td>
+</tr>
+</tbody>
+</table>
+<p>According to this ELO model, the <em>Timberwolves</em>, <em>Hornets</em>, and <em>Wizards</em> are outperforming their ratings. We should expect these teams to have lower win-percentages as their opponents become more difficult. Conversely, the <em>Pelicans</em> and <em>Grizzlies</em> are vastly underperforming their ratings. They have two of the three highest differentials between their win-percentage rankings and their ELO rankings in the league. J.J. Redick mentioned on his podcast that the Pelicans have had a very difficult schedule in the early season with easier games coming later on. This model suggests that the <em>Pelicans</em> and <em>Timberwolves</em> are much better than their records indicate.</p>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+
