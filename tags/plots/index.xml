@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>plots on Milan&#39;s Blog</title>
+    <link>/tags/plots/</link>
+    <description>Recent content in plots on Milan&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 22 Feb 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/plots/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>NBA Matchup Plots</title>
+      <link>/2020/02/22/nba-matchup-plots/</link>
+      <pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/02/22/nba-matchup-plots/</guid>
+      <description>Sometime in October last year, the NBA added matchup data to their stats page, prompting Seth Partnow to tweet out this plot. With some “quick and dirty” python code, Daryl Blackport of pbpstats.com recreated this plot.
+Oh Hello: https://t.co/bn7zTT89y7 pic.twitter.com/bSl9G5OCGC
+&amp;mdash; Anchorage Man (@SethPartnow) October 25, 2019  So, here I am, recreating this plot once again in R, and sharing the code here. It’s like a weird game of telephone, but with NBA matchup plots.</description>
+    </item>
+    
+  </channel>
+</rss>

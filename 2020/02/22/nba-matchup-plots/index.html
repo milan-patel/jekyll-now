@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.62.1" />
+
+
+<title>NBA Matchup Plots - Milan&#39;s Blog</title>
+<meta property="og:title" content="NBA Matchup Plots - Milan&#39;s Blog">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/milan-patel">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/mialnpatle">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">2 min read</span>
+    
+
+    <h1 class="article-title">NBA Matchup Plots</h1>
+
+    
+    <span class="article-date">2020-02-22</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p>Sometime in October last year, the NBA added matchup data to their stats page, prompting Seth Partnow to tweet out <a href="https://twitter.com/SethPartnow/status/1187856326606675969">this plot</a>. With some “quick and dirty” python code, Daryl Blackport of <a href="https://www.pbpstats.com/">pbpstats.com</a> <a href="https://dblackrun.github.io/2019/10/26/nba-matchup-plots.html">recreated this plot</a>.</p>
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Oh Hello: <a href="https://t.co/bn7zTT89y7">https://t.co/bn7zTT89y7</a> <a href="https://t.co/bSl9G5OCGC">pic.twitter.com/bSl9G5OCGC</a></p>&mdash; Anchorage Man (@SethPartnow) <a href="https://twitter.com/SethPartnow/status/1187856326606675969?ref_src=twsrc%5Etfw">October 25, 2019</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p>So, here I am, recreating this plot once again in <code>R</code>, and sharing the code here. It’s like a weird game of telephone, but with NBA matchup plots. The exact code used by <code>dblackrun</code> in his example did not work on my machine, despite a few minutes of trouble-shooting, and I attribute this to my unfamiliarity with <code>stats.nba.com</code>. For those running into the same issue getting this working in <code>python</code>, I recommend <a href="https://github.com/swar/nba_api"><code>nba_api</code></a>. Within this example, I’ll be using <a href="https://github.com/abresler/nbastatR"><code>NBAStatR</code></a>, an <code>R</code> equivalent to <code>nba_api</code>.</p>
+<pre class="r"><code>library(tidyverse)
+library(nbastatR)</code></pre>
+<pre class="r"><code># Setting game_ID to Zion Williamson&#39;s debut 
+game_ID &lt;- &quot;0021900663&quot;
+
+# calling nbastatR::box_scores() loads in the data into a
+# tibble named dataBoxScorePlayerNBA
+box_scores(game_ids = game_ID, box_score_types = &quot;matchups&quot;, result_types = &quot;player&quot;)
+
+
+# Create datasets for both teams
+both_on_pels &lt;- dataBoxScorePlayerNBA %&gt;%
+  filter(nameTeamDefense == &quot;New Orleans Pelicans&quot;) %&gt;%
+  select(namePlayerDefense, namePlayerOffense, PCT_DEFENDER_TOTAL_TIME)
+
+both_on_spurs &lt;- dataBoxScorePlayerNBA %&gt;%
+  filter(nameTeamDefense == &quot;San Antonio Spurs&quot;) %&gt;%
+  select(namePlayerDefense, namePlayerOffense, PCT_DEFENDER_TOTAL_TIME)
+
+
+# Plot Defensive Assignments by % of shared court time
+nba_matchup_plot_pels &lt;- ggplot(data=both_on_pels,mapping = aes(namePlayerOffense, namePlayerDefense)) +
+  geom_tile(aes(fill=PCT_DEFENDER_TOTAL_TIME), colour=&quot;white&quot;) + 
+  scale_fill_gradient(low=&quot;white&quot;, high=&quot;firebrick&quot;) +
+  theme(axis.text.x = element_text(angle = 300)) +
+  theme(legend.position=&quot;none&quot;) + 
+  ylab(&quot;Defender&quot;) +
+  xlab(&quot;&quot;) +
+  ggtitle(&quot;Pelicans Defensive Matchups by % of Defender Court Time 
+          vs. Spurs 01/23/20&quot;)
+
+nba_matchup_plot_spurs &lt;- ggplot(data=both_on_spurs,mapping = aes(namePlayerOffense, namePlayerDefense)) +
+  geom_tile(aes(fill=PCT_DEFENDER_TOTAL_TIME), colour=&quot;white&quot;) + 
+  scale_fill_gradient(low=&quot;white&quot;, high=&quot;firebrick&quot;) + 
+  theme(axis.text.x = element_text(angle = 300)) +
+  theme(legend.position=&quot;none&quot;) + 
+  ylab(&quot;Defender&quot;) +
+  xlab(&quot;&quot;) +
+  ggtitle(&quot;Spurs Defensive Matchups by % of Defender Court Time 
+          vs. Pelicans 01/23/20&quot;)</code></pre>
+<pre class="r"><code>nba_matchup_plot_pels</code></pre>
+<p><img src="/post/2020-02-22-NBA-Matchup-Plots_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Here, we can see that the Zion Williamson was primarily responsible for defending Trey Lyles and Jakub Poetl when sharing the court with them. As expected, Jrue Holiday, the Pelican’s best wing defender, was responsible for guarding Demar Derozan, the Spurs’ best wing scorer, when they shared the court.</p>
+<pre class="r"><code>nba_matchup_plot_spurs</code></pre>
+<p><img src="/post/2020-02-22-NBA-Matchup-Plots_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>From this, we see that Lyles, Aldridge and Poetl all shared in defending Williamson. And outside of a prolific 4 minute stretch for Williamson, they did a pretty great job at it too.</p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+
