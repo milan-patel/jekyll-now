@@ -6,10 +6,20 @@
     <description>Recent content in NBA on Milan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 22 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 03 Jun 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/nba/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Animated Charts in R</title>
+      <link>/2020/06/03/animated-charts-in-r/</link>
+      <pubDate>Wed, 03 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/06/03/animated-charts-in-r/</guid>
+      <description>I came across a github repository here with a code snippet, explaining how to make an animated chart in R. I’ve implemented it here.
+library(tidyverse) library(nbastatR) library(gganimate) library(scales) m &amp;lt;- metrics_leaders(seasons = 2010:2019, metric = &amp;quot;fg3m&amp;quot;, season_types = &amp;quot;Regular Season&amp;quot;, modes = c(&amp;quot;Totals&amp;quot;), return_message = TRUE, nest_data = FALSE) %&amp;gt;% select(slugSeason, namePlayer, fg3m, numberRank) %&amp;gt;% mutate(Value_lbl = paste0(fg3m)) %&amp;gt;% group_by(slugSeason) %&amp;gt;% filter(numberRank &amp;lt;= 10) %&amp;gt;% ungroup() anim &amp;lt;- ggplot(m, aes(numberRank, group = namePlayer, fill=as.</description>
+    </item>
     
     <item>
       <title>NBA Matchup Plots</title>

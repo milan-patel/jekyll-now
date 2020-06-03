@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.72.0" />
+
+
+<title>Animated Charts in R - Milan&#39;s Blog</title>
+<meta property="og:title" content="Animated Charts in R - Milan&#39;s Blog">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/milan-patel">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/mialnpatle">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">1 min read</span>
+    
+
+    <h1 class="article-title">Animated Charts in R</h1>
+
+    
+    <span class="article-date">2020-06-03</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p>I came across a github repository <a href="https://github.com/amrrs/animated_bar_charts_in_R">here</a> with a code snippet, explaining how to make an animated chart in R. I’ve implemented it here.</p>
+<pre class="r"><code>library(tidyverse)
+library(nbastatR)
+library(gganimate)
+library(scales)</code></pre>
+<pre class="r"><code>m &lt;- metrics_leaders(seasons = 2010:2019, metric = &quot;fg3m&quot;,
+                season_types = &quot;Regular Season&quot;, modes = c(&quot;Totals&quot;),
+                return_message = TRUE, nest_data = FALSE) %&gt;%
+  select(slugSeason, namePlayer, fg3m, numberRank) %&gt;%
+  mutate(Value_lbl = paste0(fg3m)) %&gt;%
+  group_by(slugSeason) %&gt;%
+  filter(numberRank &lt;= 10) %&gt;%
+  ungroup()
+
+anim &lt;- ggplot(m, aes(numberRank, group = namePlayer, fill=as.factor(namePlayer), colour=as.factor(namePlayer)))+
+  geom_tile(aes(y=fg3m/2, height=fg3m, width=0.9), alpha=0.8, color=NA) +
+  geom_text(aes(y=0, label=paste(namePlayer,&quot;&quot;)),vjust=0.1,hjust=1)+
+  geom_text(aes(y=fg3m, label=Value_lbl),hjust=0)+
+  coord_flip(clip=&quot;off&quot;,expand=FALSE)+
+  scale_y_continuous(labels= scales::comma)+
+  scale_x_reverse()+
+  guides(color = FALSE, fill = FALSE) +
+  theme(axis.line=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        legend.position=&quot;none&quot;,
+        panel.background=element_blank(),
+        panel.border=element_blank(),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        panel.grid.major.x = element_line( size=.1, color=&quot;grey&quot; ),
+        panel.grid.minor.x = element_line( size=.1, color=&quot;grey&quot; ),
+        plot.title=element_text(size=25, hjust=0.5, face=&quot;bold&quot;, colour=&quot;grey&quot;, vjust=-1),
+        plot.subtitle=element_text(size=18, hjust=0.5, face=&quot;italic&quot;, color=&quot;grey&quot;),
+        plot.caption =element_text(size=8, hjust=0.5, face=&quot;italic&quot;, color=&quot;grey&quot;),
+        plot.background=element_blank(),
+        plot.margin = margin(2,2, 2, 4, &quot;cm&quot;)) +
+  transition_states(slugSeason, transition_length = 4, state_length = 1, wrap = TRUE) +
+  view_follow(fixed_x = TRUE) +
+  labs(title = &#39; 3pt-Leaders By Season : {closest_state}&#39;,  
+       subtitle  =  &quot;Top 10 Shooters&quot;,
+       caption  = &quot;Data Source: nbastatR&quot;)
+
+animate(anim, 200, fps = 20,  width = 1200, height = 1000, 
+        renderer = gifski_renderer(&quot;threes.gif&quot;), end_pause = 15, start_pause =  15)</code></pre>
+<div class="figure">
+<img src="/img/threes.gif" alt="" />
+<p class="caption">Three Point Leaders</p>
+</div>
+<p>And there we have the finished product. Check the repository to try it out yourself!</p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+
