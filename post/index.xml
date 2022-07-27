@@ -6,11 +6,7 @@
     <description>Recent content in Posts on Milan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 03 Jun 2020 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 03 Jun 2020 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Animated Charts in R</title>
       <link>/2020/06/03/animated-charts-in-r/</link>
@@ -22,6 +18,15 @@ library(tidyverse) library(nbastatR) library(gganimate) library(scales) m &amp;l
     </item>
     
     <item>
+      <title>The Odds of GPA</title>
+      <link>/2020/06/03/the-odds-of-gpa/</link>
+      <pubDate>Wed, 03 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/06/03/the-odds-of-gpa/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>NBA Matchup Plots</title>
       <link>/2020/02/22/nba-matchup-plots/</link>
       <pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate>
@@ -29,7 +34,7 @@ library(tidyverse) library(nbastatR) library(gganimate) library(scales) m &amp;l
       <guid>/2020/02/22/nba-matchup-plots/</guid>
       <description>Sometime in October last year, the NBA added matchup data to their stats page, prompting Seth Partnow to tweet out this plot. With some “quick and dirty” python code, Daryl Blackport of pbpstats.com recreated this plot.
 Oh Hello: https://t.co/bn7zTT89y7 pic.twitter.com/bSl9G5OCGC
-&amp;mdash; Anchorage Man (@SethPartnow) October 25, 2019  So, here I am, recreating this plot once again in R, and sharing the code here. It’s like a weird game of telephone, but with NBA matchup plots.</description>
+&amp;mdash; Anchorage Man (@SethPartnow) October 25, 2019 So, here I am, recreating this plot once again in R, and sharing the code here. It’s like a weird game of telephone, but with NBA matchup plots.</description>
     </item>
     
     <item>
@@ -51,16 +56,6 @@ The update formula follows this basic structure, \(R_{new} = R_{prev}+k(S-p)\) ,
       <guid>/2020/01/02/analyzing-clutchness-in-the-nba/</guid>
       <description>The following is an adapted version of a final project submitted for my classification course
 Typically, an NBA team will attempt shots that maximizes their expected points per shot. For example, consider how a three-point shot with a 0.35 probability of scoring has a higher expected points per shot (\(E(S_{3ptr})= 3 \cdot 35\% = 1.05\)) than a two-point shot with a 0.45 probability of scoring (\(E(S_{2ptr})= 2 \cdot 45\% = 0.</description>
-    </item>
-    
-    <item>
-      <title>My First Blog Post!</title>
-      <link>/2020/01/01/my-first-blog-post/</link>
-      <pubDate>Wed, 01 Jan 2020 13:09:13 -0600</pubDate>
-      
-      <guid>/2020/01/01/my-first-blog-post/</guid>
-      <description>2020 is the year I blog more. It&amp;rsquo;s also the year I start blogging. The goal is to post data analysis week. That&amp;rsquo;s 52 posts. Once a week. For a year.
-The idea of it scares me. I have a lot of ideas I don&amp;rsquo;t act on because I worry they aren&amp;rsquo;t polished enough. There&amp;rsquo;s a lot of things I don&amp;rsquo;t do because I worry I won&amp;rsquo;t do them well. But the only way to get better is to try.</description>
     </item>
     
   </channel>

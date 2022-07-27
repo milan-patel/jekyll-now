@@ -6,11 +6,7 @@
     <description>Recent content in plots on Milan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 03 Jun 2020 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="/tags/plots/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 03 Jun 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/plots/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Animated Charts in R</title>
       <link>/2020/06/03/animated-charts-in-r/</link>
@@ -22,6 +18,15 @@ library(tidyverse) library(nbastatR) library(gganimate) library(scales) m &amp;l
     </item>
     
     <item>
+      <title>The Odds of GPA</title>
+      <link>/2020/06/03/the-odds-of-gpa/</link>
+      <pubDate>Wed, 03 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/06/03/the-odds-of-gpa/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>NBA Matchup Plots</title>
       <link>/2020/02/22/nba-matchup-plots/</link>
       <pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate>
@@ -29,7 +34,7 @@ library(tidyverse) library(nbastatR) library(gganimate) library(scales) m &amp;l
       <guid>/2020/02/22/nba-matchup-plots/</guid>
       <description>Sometime in October last year, the NBA added matchup data to their stats page, prompting Seth Partnow to tweet out this plot. With some “quick and dirty” python code, Daryl Blackport of pbpstats.com recreated this plot.
 Oh Hello: https://t.co/bn7zTT89y7 pic.twitter.com/bSl9G5OCGC
-&amp;mdash; Anchorage Man (@SethPartnow) October 25, 2019  So, here I am, recreating this plot once again in R, and sharing the code here. It’s like a weird game of telephone, but with NBA matchup plots.</description>
+&amp;mdash; Anchorage Man (@SethPartnow) October 25, 2019 So, here I am, recreating this plot once again in R, and sharing the code here. It’s like a weird game of telephone, but with NBA matchup plots.</description>
     </item>
     
   </channel>
